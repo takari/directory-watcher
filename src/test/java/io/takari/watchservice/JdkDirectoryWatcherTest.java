@@ -123,10 +123,10 @@ public class JdkDirectoryWatcherTest {
     assertEquals(three.get(1), actions.get(3).kind);
     assertEquals(three.get(2), actions.get(4).kind);
     
-    List<WatchEvent.Kind<Path>> four = events.get("file1InDir.txt");
+    List<WatchEvent.Kind<Path>> four = events.get("testDir/file1InDir.txt");
     assertEquals(1, four.size());
     
-    List<WatchEvent.Kind<Path>> five = events.get("file2InDir.txt");
+    List<WatchEvent.Kind<Path>> five = events.get("testDir/file2InDir.txt");
     assertEquals(2, five.size());    
     
   }

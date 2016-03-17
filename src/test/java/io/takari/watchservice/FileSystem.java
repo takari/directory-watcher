@@ -37,12 +37,13 @@ public class FileSystem {
   }
 
   public FileSystem create(File path, String content) {
-    actions.add(new FileSystemAction(ENTRY_CREATE, new File(directoryToOperateOn.toFile(), path.getName()).toPath() , content));
+    Path truePath = new File(directoryToOperateOn.toFile(), path.toString()).toPath();
+    actions.add(new FileSystemAction(ENTRY_CREATE, truePath, content));
     return this;
   }
 
   public FileSystem createDir(String dir) {
-    actions.add(new FileSystemAction(FileSystemAction.Type.MKDIR, Paths.get(dir)));
+    actions.add(new FileSystemAction(FileSystemAction.Type.MKDIR, Paths.get(directoryToOperateOn.toString(), dir)));
     return this;
   }
   
@@ -51,7 +52,8 @@ public class FileSystem {
   }
 
   public FileSystem update(File path, String content) {
-    actions.add(new FileSystemAction(ENTRY_MODIFY, new File(directoryToOperateOn.toFile(), path.getName()).toPath(), content));
+    Path truePath = new File(directoryToOperateOn.toFile(), path.toString()).toPath();
+    actions.add(new FileSystemAction(ENTRY_MODIFY, truePath, content));
     return this;
   }
 
@@ -60,7 +62,8 @@ public class FileSystem {
   }
 
   public FileSystem delete(File path) {
-    actions.add(new FileSystemAction(ENTRY_DELETE, new File(directoryToOperateOn.toFile(), path.getName()).toPath()));
+    Path truePath = new File(directoryToOperateOn.toFile(), path.toString()).toPath();
+    actions.add(new FileSystemAction(ENTRY_DELETE, truePath));
     return this;
   }
   
@@ -102,8 +105,9 @@ public class FileSystem {
             
           case MKDIR:
            
-            if (!action.path.toFile().exists())
+            if (!action.path.toFile().exists()) {
               action.path.toFile().mkdirs();
+            }
             
             break;
             
