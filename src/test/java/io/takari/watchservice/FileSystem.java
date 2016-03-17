@@ -6,6 +6,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +41,11 @@ public class FileSystem {
     return this;
   }
 
+  public FileSystem createDir(String dir) {
+    actions.add(new FileSystemAction(FileSystemAction.Type.MKDIR, Paths.get(dir)));
+    return this;
+  }
+  
   public FileSystem update(String path, String content) {
     return update(new File(path), content);
   }
@@ -66,7 +72,8 @@ public class FileSystem {
   public List<FileSystemAction> actions() {
     List<FileSystemAction> realActions = Lists.newArrayList();
     for(FileSystemAction a : actions) {
-      if(a.millis == 0) {
+      if(a.myType == FileSystemAction.Type.COUNTABLE) {
+        System.out.println(String.format("adding action:%s:path:%s:myType:%s:", a.kind, (a.path != null) ? a.path : "", a.myType.name()));
         realActions.add(a);
       }
     }    
@@ -83,29 +90,57 @@ public class FileSystem {
       } else if (action.kind == ENTRY_DELETE) {
         action.path.toFile().delete();
       } else {
-        try {
-          Thread.sleep(action.millis);
-        } catch (InterruptedException e) {
-        }            
+        
+        switch (action.myType) {
+          
+          case WAIT:
+            try {
+              Thread.sleep(action.millis);
+            } catch (InterruptedException e) {
+            }                      
+            break;
+            
+          case MKDIR:
+           
+            if (!action.path.toFile().exists())
+              action.path.toFile().mkdirs();
+            
+            break;
+            
+          case COUNTABLE:
+          case NOOP:
+            break;          
+        }
+          
       }
     }
   }
 
   public static class FileSystemAction {
     enum Type {
-      CREATE, UPDATE, DELETE, WAIT
+      WAIT, MKDIR, COUNTABLE, NOOP
     };
 
     final WatchEvent.Kind<Path> kind;
     final Path path;
     final String content;
     final int millis;
+    final Type myType;
     
     FileSystemAction(int millis) {
       this.millis = millis;
       this.kind = null;
       this.path = null;
-      this.content = null;      
+      this.content = null;   
+      this.myType = Type.WAIT;
+    }
+    
+    FileSystemAction(Type stub, Path path) {
+      this.millis = 0;
+      this.kind = null;
+      this.path = path;
+      this.content = null;
+      this.myType = Type.MKDIR;
     }
 
     FileSystemAction(WatchEvent.Kind<Path> type, Path path) {
@@ -117,6 +152,7 @@ public class FileSystem {
       this.path = path;
       this.content = content;
       this.millis = 0;
+      this.myType = Type.COUNTABLE;
     }
   }
 }
