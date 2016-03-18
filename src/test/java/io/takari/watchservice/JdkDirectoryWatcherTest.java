@@ -70,7 +70,17 @@ public class JdkDirectoryWatcherTest {
       .wait(waitInMs) //
       .update("three.txt", " 222222") //
       .wait(waitInMs) //
-      .delete("one.txt");
+      .delete("one.txt") //
+      .wait(waitInMs) //
+      .createDir("testDir") // 
+      .wait(waitInMs) //
+      .create("testDir/file1InDir.txt") //
+      .wait(waitInMs) //
+      .create("testDir/file2InDir.txt", " 111111") //
+      .wait(waitInMs) //
+      .update("testDir/file2InDir.txt", " 222222") //
+      .wait(waitInMs) //
+      ;
     // Collect our filesystem actions 
     List<FileSystemAction> actions = fileSystem.actions();
 
@@ -112,6 +122,13 @@ public class JdkDirectoryWatcherTest {
     assertEquals(three.get(0), actions.get(2).kind);
     assertEquals(three.get(1), actions.get(3).kind);
     assertEquals(three.get(2), actions.get(4).kind);
+    
+    List<WatchEvent.Kind<Path>> four = events.get("testDir/file1InDir.txt");
+    assertEquals(1, four.size());
+    
+    List<WatchEvent.Kind<Path>> five = events.get("testDir/file2InDir.txt");
+    assertEquals(2, five.size());    
+    
   }
 
   private static Runnable watcher(final DirectoryWatcher watcher, final List<FileSystemAction> actions) {
