@@ -122,11 +122,11 @@ public class JdkDirectoryWatcherTest {
     assertEquals(three.get(1), actions.get(3).kind);
     assertEquals(three.get(2), actions.get(4).kind);
 
-    List<WatchEvent.Kind<Path>> four = events.get("testDir/file1InDir.txt");
+    List<WatchEvent.Kind<Path>> four = events.get("testDir" + File.separatorChar + "file1InDir.txt");
     assertEquals(1, four.size());
     assertEquals(three.get(0), actions.get(6).kind);
 
-    List<WatchEvent.Kind<Path>> five = events.get("testDir/file2InDir.txt");
+    List<WatchEvent.Kind<Path>> five = events.get("testDir" + File.separatorChar + "file2InDir.txt");
     assertEquals(2, five.size());
     assertEquals(three.get(0), actions.get(7).kind);
     assertEquals(three.get(1), actions.get(8).kind);
