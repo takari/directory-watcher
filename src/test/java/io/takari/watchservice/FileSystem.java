@@ -83,7 +83,7 @@ public class FileSystem {
     return realActions;
   }
   
-  public void playActions() throws Exception {
+  public void playActions( ) throws Exception {
     for (FileSystemAction action : actions) {
       if (action.kind == ENTRY_CREATE) {
         FileUtils.fileWrite(action.path.toFile(), action.content);
