@@ -41,8 +41,8 @@ class DirectoryWatcherJdk {
     registerAll(directory);
   }
 
-  private void register(Path directory) throws IOException {
-    keyRoots.put(directory.register(watcher, new WatchEvent.Kind[] {ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY}), directory);
+  private void register(Path dir) throws IOException {
+    keyRoots.put(dir.register(watcher, new WatchEvent.Kind[] {ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY}), dir);
   }
 
   private void registerAll(final Path start) throws IOException {
@@ -68,7 +68,8 @@ class DirectoryWatcherJdk {
         key = watcher.take();
       } catch (InterruptedException x) {
         return;
-      }      
+      }
+      
       for (WatchEvent<?> event : key.pollEvents()) {
         WatchEvent.Kind<?> kind = event.kind();
         if (kind == OVERFLOW) {
@@ -77,12 +78,15 @@ class DirectoryWatcherJdk {
         // Context for directory entry event is the file name of entry
         WatchEvent<Path> ev = cast(event);
         Path name = ev.context();
+
         Path child = keyRoots.containsKey(key) ?  keyRoots.get(key).resolve(name) : directory.resolve(name);
-        // if directory is created, and watching recursively, then register it and its sub-directories
+        // if directory is created, and watching recursively, then
+        // register it and its sub-directories
         if (kind == ENTRY_CREATE) {
           if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
             registerAll(child);
-          } else {            
+          } else {
+            
             pathHashes.put(child, hash(child));
             listener.onCreate(child);
           }

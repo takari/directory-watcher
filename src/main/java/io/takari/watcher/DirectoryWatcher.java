@@ -24,14 +24,14 @@ public class DirectoryWatcher {
   private final boolean isMac;
   private DirectoryWatcherJdk jdkWatcher;
 
-  public DirectoryWatcher(Path directory, Watchable directoryToMonitor, WatchService watchService, DirectoryChangeListener listener, boolean isMac) throws IOException {
+  public DirectoryWatcher(Path directory, WatchService watchService, DirectoryChangeListener listener, boolean isMac) throws IOException {
     this.directory = directory;
     this.watchService = watchService;
     this.listener = listener;
     this.isMac = isMac;
 
     if (isMac) {
-      register(directoryToMonitor);
+      register(new WatchablePath(directory));
     } else {
       jdkWatcher = new DirectoryWatcherJdk(directory, listener);
     }
@@ -130,9 +130,9 @@ public class DirectoryWatcher {
     public DirectoryWatcher build() throws IOException {
       String os = System.getProperty("os.name").toLowerCase();
       if (os.contains("mac")) {
-        return new DirectoryWatcher(directory, new WatchablePath(directory), new MacOSXListeningWatchService(), listener, true);
+        return new DirectoryWatcher(directory, new MacOSXListeningWatchService(), listener, true);
       } else {
-        return new DirectoryWatcher(directory, directory, FileSystems.getDefault().newWatchService(), listener, false);
+        return new DirectoryWatcher(directory, FileSystems.getDefault().newWatchService(), listener, false);
       }
     }
   }

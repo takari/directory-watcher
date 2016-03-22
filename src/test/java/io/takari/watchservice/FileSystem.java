@@ -81,7 +81,7 @@ public class FileSystem {
     return realActions;
   }
   
-  public void playActions() throws Exception {
+  public void playActions( ) throws Exception {
     for (FileSystemAction action : actions) {
       if (action.kind == ENTRY_CREATE) {
         FileUtils.fileWrite(action.path.toFile(), action.content);
@@ -90,23 +90,31 @@ public class FileSystem {
         action.path.toFile().setLastModified(new Date().getTime());
       } else if (action.kind == ENTRY_DELETE) {
         action.path.toFile().delete();
-      } else {        
-        switch (action.myType) {          
+      } else {
+        
+        switch (action.myType) {
+          
           case WAIT:
             try {
               Thread.sleep(action.millis);
             } catch (InterruptedException e) {
             }                      
-            break;            
-          case MKDIR:           
+
+            break;
+            
+          case MKDIR:
+           
             if (!action.path.toFile().exists()) {
               action.path.toFile().mkdirs();
-            }            
-            break;            
+            }
+            
+            break;
+            
           case COUNTABLE:
           case NOOP:
             break;          
-        }          
+        }
+          
       }
     }
   }
