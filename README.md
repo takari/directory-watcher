@@ -1,5 +1,7 @@
 # Directory Watcher
 
+DEPRECATED: use https://github.com/gmethvin/directory-watcher
+
 A recursive directory watcher with a native OSX implementation of the WatchService.
 
 ``` java
@@ -23,7 +25,7 @@ public class DirectoryWatchingUtility {
     DirectoryWatcher watcher = DirectoryWatcher.builder()
       .directory(directoryToWatch)
       .listener(new DirectoryChangeListener() {
-      
+
       @Override
       public void onCreate(Path path) throws IOException {
         // process create
